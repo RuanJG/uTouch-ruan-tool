@@ -1,0 +1,14 @@
+cp sdk/out/.../system.img ./ (this system.img must can be mount)
+#download touch fs 
+wget http://cdimage.ubuntu.com/ubuntu-touch/daily-preinstalled/current/vivid-preinstalled-touch-armhf.tar.gz
+
+adb push mkusystem.sh /data/
+adb push system.img /data/
+adb push vivixxxxx-touch-armhf.tar.gz /data/
+
+adb shell
+# ./data/mkusystem.sh
+
+
+
+### the mkusystem.sh may be need update by compare project-rootstock-ng
