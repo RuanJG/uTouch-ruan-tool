@@ -3,7 +3,7 @@ cp sdk/out/.../system.img ./ (this system.img must can be mount)
 wget http://cdimage.ubuntu.com/ubuntu-touch/daily-preinstalled/current/vivid-preinstalled-touch-armhf.tar.gz
 
 adb push mkusystem.sh /data/
-adb push system.img /data/
+adb push system.img /data/android-system.img
 adb push vivixxxxx-touch-armhf.tar.gz /data/
 
 adb shell
