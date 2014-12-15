@@ -1,4 +1,4 @@
-TARBALL=/data/vivid-preinstalled-touch-armhf.tar.gz
+TARBALL=/data/touch.tar.gz
 SYSIMG=/data/android-system.img
 
 echo -n "preparing system-image on device ... "

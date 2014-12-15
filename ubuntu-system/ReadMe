@@ -4,7 +4,7 @@ wget http://cdimage.ubuntu.com/ubuntu-touch/daily-preinstalled/current/vivid-pre
 
 adb push mkusystem.sh /data/
 adb push system.img /data/android-system.img
-adb push vivixxxxx-touch-armhf.tar.gz /data/
+adb push vivixxxxx-touch-armhf.tar.gz /data/touch.tar.gz
 
 adb shell
 # ./data/mkusystem.sh
