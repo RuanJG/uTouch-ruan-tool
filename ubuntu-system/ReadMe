@@ -1,7 +1,10 @@
 cp sdk/out/.../system.img ./ (this system.img must can be mount)
 #download touch fs 
 wget http://cdimage.ubuntu.com/ubuntu-touch/daily-preinstalled/current/vivid-preinstalled-touch-armhf.tar.gz
+## 70-rk3188.rules
+cat out/target/product/rk3188/root/ueventd*.rc|grep ^/dev|sed -e 's/^\/dev\///'|awk '{printf "ACTION==\"add\", KERNEL==\"%s\", OWNER=\"%s\", GROUP=\"%s\", MODE=\"%s\"\n",$1,$3,$4,$2}' | sed -e 's/\r//' > 70-rk3188.rules
 
+adb push 70-rk3188.rules /data/
 adb push mkusystem.sh /data/
 adb push system.img /data/android-system.img
 adb push vivixxxxx-touch-armhf.tar.gz /data/touch.tar.gz

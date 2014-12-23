@@ -1,5 +1,6 @@
 TARBALL=/data/touch.tar.gz
 SYSIMG=/data/android-system.img
+CUST_TAR=/data/cust-touch.tar.gz
 
 echo -n "preparing system-image on device ... "
 rm -f /data/system.img
@@ -37,6 +38,18 @@ if [ ! -z "$WIPE_PATH" ]; then
 fi
 echo "[done]"
 
+echo -n "adding custom path .... "
+mkdir /cache/system/custom -p
+cd /cache
+zcat $CUST_TAR | tar xf -
+cd /
+echo "[done]"
+
+echo -n "adding rules ... "
+chomd 0777 /data/*rules
+cp -v /data/*.rules /cache/system/usr/lib/lxc-android-config/
+cp -v /data/*.rules /cache/system/lib/udev/rules.d/
+echo "[done]"
 
 echo -n "adding android system image to installation ... "
 #convert_android_img
@@ -54,6 +67,5 @@ cd /
 umount /cache/system 
 rm -rf /cache/system 
 echo "[done]"
-
 
 

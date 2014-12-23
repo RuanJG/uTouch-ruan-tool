@@ -33,6 +33,8 @@ echo "+++++++++++++++  $R_arg"
 
 ####################################
 
+insmod rk30xxnand_ko.ko.3.0.36+
+
 [ -d /dev ] || mkdir -m 0755 /dev
 [ -d /root ] || mkdir -m 0700 /root
 [ -d /sys ] || mkdir /sys
@@ -54,7 +56,6 @@ if ! mount -t devtmpfs -o mode=0755 udev /dev; then
 	[ -e /dev/console ] || mknod -m 0600 /dev/console c 5 1
 	[ -e /dev/null ] || mknod /dev/null c 1 3
 fi
-insmod rk30xxnand_ko.ko.3.0.36+
 mkdir /dev/pts
 mount -t devpts -o noexec,nosuid,gid=5,mode=0620 devpts /dev/pts || true
 mount -t tmpfs -o "noexec,nosuid,size=10%,mode=0755" tmpfs /run
@@ -286,6 +287,12 @@ maybe_break mountroot
 mountroot
 log_end_msg
 
+########
+insmod /root/android/system/lib/modules/ump.ko
+insmod /root/android/system/lib/modules/mali.ko mali_dvfs=50,100,133,160,200,266,400 mali_init_clock=50
+insmod /root/android/system/lib/modules/rk30_mirroring.ko.3.0.8+
+insmod /root/android/system/lib/modules/rk29-ipp.ko
+##########3
 maybe_break bottom
 [ "$quiet" != "y" ] && log_begin_msg "Running /scripts/init-bottom"
 run_scripts /scripts/init-bottom
@@ -394,6 +401,7 @@ echo "+++++++++++++++++++ $$"
 # Chain to real filesystem
 echo "++++++run: exec run-init ${rootmnt}  $init "$R_arg" ${recovery:+--startup-event=recovery} <${rootmnt}/dev/console >${rootmnt}/dev/console "
 #exec run-init ${rootmnt} ${init} "$@" ${recovery:+--startup-event=recovery} <${rootmnt}/dev/console >${rootmnt}/dev/console 2>&1
+#busybox sh
 exec run-init ${rootmnt} ${init} "$R_arg" ${recovery:+--startup-event=recovery} <${rootmnt}/dev/console >${rootmnt}/dev/console 2>&1
 echo "------------------"
 #panic "Could not execute run-init."
