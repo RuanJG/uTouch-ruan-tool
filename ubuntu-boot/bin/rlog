@@ -1,0 +1,4 @@
+#!/bin/sh
+R_log_file='/var/tmp/ruan.log'
+echo "rlog>>$@" >> $R_log_file
+sync

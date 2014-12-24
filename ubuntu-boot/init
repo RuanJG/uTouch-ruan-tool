@@ -25,7 +25,9 @@ ln busybox cat
 ln busybox find
 ln busybox tail
 ln busybox umount
+ln busybox_vi vi
 cd /
+
 
 echo "+++++++++++++++++++ $$"
 echo "+++++++++++++++  $@"
@@ -397,12 +399,20 @@ if [ -z $init ];then
 	init='/init'
 	ls $init -l
 fi
-echo "+++++++++++++++++++ $$"
-# Chain to real filesystem
-echo "++++++run: exec run-init ${rootmnt}  $init "$R_arg" ${recovery:+--startup-event=recovery} <${rootmnt}/dev/console >${rootmnt}/dev/console "
-#exec run-init ${rootmnt} ${init} "$@" ${recovery:+--startup-event=recovery} <${rootmnt}/dev/console >${rootmnt}/dev/console 2>&1
-#busybox sh
-exec run-init ${rootmnt} ${init} "$R_arg" ${recovery:+--startup-event=recovery} <${rootmnt}/dev/console >${rootmnt}/dev/console 2>&1
-echo "------------------"
-#panic "Could not execute run-init."
-#busybox sh
+#################3
+[ -e $rootmnt/bin/rlog ] && cp /bin/rlog $rootmnt/bin/rlog
+[ -x $rootmnt/bin/rlog ] && chmod 0777 $rootmnt/bin/rlog  
+if [ ! -e $rootmnt/bootinit.txt ];then 
+	echo "boot in to busybox sh "
+	echo '1' > $rootmnt/bootinit.txt -f
+	sync
+	busybox sh
+else
+	echo "boot into init "
+	rm $rootmnt/bootinit.txt -f
+	echo " ++++++++ exec run-init ${rootmnt} ${init} "$R_arg" ${recovery:+--startup-event=recovery} <${rootmnt}/dev/console >${rootmnt}/dev/console 2>&1"
+	echo "+++++++++++++++++++++++++++start touch init" >> $rootmnt/var/tmp/ruan.log
+	sync
+	exec run-init ${rootmnt} ${init} "$R_arg" ${recovery:+--startup-event=recovery} <${rootmnt}/dev/console >${rootmnt}/dev/console 2>&1
+fi
+#################

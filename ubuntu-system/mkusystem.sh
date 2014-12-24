@@ -46,9 +46,9 @@ cd /
 echo "[done]"
 
 echo -n "adding rules ... "
-chomd 0777 /data/*rules
-cp -v /data/*.rules /cache/system/usr/lib/lxc-android-config/
-cp -v /data/*.rules /cache/system/lib/udev/rules.d/
+chomd 0777 /data/70-*.rules
+cp -v /data/70-*.rules /cache/system/usr/lib/lxc-android-config/
+cp -v /data/70-*.rules /cache/system/lib/udev/rules.d/
 echo "[done]"
 
 echo -n "adding android system image to installation ... "
