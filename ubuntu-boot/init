@@ -65,6 +65,20 @@ mkdir /run/initramfs
 # compatibility symlink for the pre-oneiric locations
 ln -s /run/initramfs /dev/.initramfs
 
+
+#############################
+
+mkdir -p /dev/block/mtd/by-name
+for i in `ls -d /sys/class/mtd/mtd*[0-9]`; do
+	name=`cat $i/name`
+	tmp="`echo $i | sed -e 's/mtd/mtdblock/g'`"
+	dev="`echo $tmp |sed -e 's/\/sys\/class\/mtdblock/\/dev/g'`"
+	ln -s $dev /dev/block/mtd/by-name/$name
+done
+
+#############################
+
+
 # Export the dpkg architecture
 export DPKG_ARCH=
 . /conf/arch.conf
@@ -290,10 +304,10 @@ mountroot
 log_end_msg
 
 ########
-insmod /root/android/system/lib/modules/ump.ko
-insmod /root/android/system/lib/modules/mali.ko mali_dvfs=50,100,133,160,200,266,400 mali_init_clock=50
-insmod /root/android/system/lib/modules/rk30_mirroring.ko.3.0.8+
-insmod /root/android/system/lib/modules/rk29-ipp.ko
+insmod /root/android/system/lib/modules/ump.ko.3.0.36+
+insmod /root/android/system/lib/modules/mali.ko.3.0.36+ mali_dvfs=50,100,133,160,200,266,400 mali_init_clock=50
+insmod /root/android/system/lib/modules/rk29-ipp.ko.3.0.36+
+#insmod /root/android/system/lib/modules/rk30_mirroring.ko.3.0.36+
 ##########3
 maybe_break bottom
 [ "$quiet" != "y" ] && log_begin_msg "Running /scripts/init-bottom"
@@ -400,19 +414,18 @@ if [ -z $init ];then
 	ls $init -l
 fi
 #################3
-[ -e $rootmnt/bin/rlog ] && cp /bin/rlog $rootmnt/bin/rlog
-[ -x $rootmnt/bin/rlog ] && chmod 0777 $rootmnt/bin/rlog  
-if [ ! -e $rootmnt/bootinit.txt ];then 
-	echo "boot in to busybox sh "
-	echo '1' > $rootmnt/bootinit.txt -f
-	sync
-	busybox sh
-else
+[ -e $rootmnt/bin/rlog ] || cp /bin/rlog $rootmnt/bin/rlog
+[ -x $rootmnt/bin/rlog ] || chmod 0777 $rootmnt/bin/rlog  
+
+if [ -e $rootmnt/userdata/bootinit.txt ];then 
 	echo "boot into init "
-	rm $rootmnt/bootinit.txt -f
+	busybox rm $rootmnt/userdata/bootinit.txt
 	echo " ++++++++ exec run-init ${rootmnt} ${init} "$R_arg" ${recovery:+--startup-event=recovery} <${rootmnt}/dev/console >${rootmnt}/dev/console 2>&1"
 	echo "+++++++++++++++++++++++++++start touch init" >> $rootmnt/var/tmp/ruan.log
-	sync
 	exec run-init ${rootmnt} ${init} "$R_arg" ${recovery:+--startup-event=recovery} <${rootmnt}/dev/console >${rootmnt}/dev/console 2>&1
+else
+	echo "boot in to busybox sh "
+	echo '1' > $rootmnt/userdata/bootinit.txt
+	busybox sh
 fi
 #################

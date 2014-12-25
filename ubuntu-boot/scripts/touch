@@ -115,8 +115,6 @@ sync_dirs() {
 
 mountroot()
 {
-	R_data_blk="/dev/mtdblock10"
-	R_cache_blk="/dev/mtdblock6"
 	# list of possible userdata partition names
 	partlist="userdata UDA DATAFS USERDATA"
 
@@ -155,9 +153,7 @@ mountroot()
 
 	if [ -z "$path" ]; then
 		echo "initrd: Couldn't find data partition. Spawning adbd ..." >/dev/kmsg || true
-		#panic "Couldn't find data partition. Spawning adbd ..."
-		#mount -t ext4 -o "noatime,nodiratime,nosuid,nodev,noauto_da_alloc,discard" /dev/mtdblock10 /tmpmnt
-		path=$R_data_blk
+		panic "Couldn't find data partition. Spawning adbd ..."
 	fi
 
 	echo "initrd: checking filesystem integrity for the userdata partition" >/dev/kmsg || true
@@ -197,15 +193,11 @@ mountroot()
 		mkdir -p /android-system
 
 		echo "initrd: mounting ubuntu system partition" >/dev/kmsg || true
-		#mount -o rw $syspart /ubuntu-system
-		#mount -o remount,ro /ubuntu-system
-		losetup /dev/loop0 /tmpmnt/system.img
-		mount -t ext4 /dev/loop0 /ubuntu-system
+		mount -o rw $syspart /ubuntu-system
+		mount -o remount,ro /ubuntu-system
 
 		echo "initrd: mounting android system image" >/dev/kmsg || true
-		#mount -o loop,ro /ubuntu-system/var/lib/lxc/android/system.img /android-system
-		losetup /dev/loop1 /ubuntu-system/var/lib/lxc/android/system.img
-		mount -t ext4 /dev/loop1 /android-system
+		mount -o loop,ro /ubuntu-system/var/lib/lxc/android/system.img /android-system
 
 		echo "initrd: extracting android ramdisk" >/dev/kmsg || true
 		OLD_CWD=$(pwd)
@@ -230,16 +222,12 @@ mountroot()
 		mount -o bind ${rootmnt}/userdata/android-data ${rootmnt}/data
 
 		# Mount all the remaining android partitions
-		#mount_android_partitions "${rootmnt}/fstab*" ${rootmnt}
-		[ -d ${rootmnt}/cache ] || mkdir ${rootmnt}/cache
-		mount -t ext4 -o "noatime,nodiratime,nosuid,nodev,noauto_da_alloc,discard" $R_cache_blk ${rootmnt}/cache
+		mount_android_partitions "${rootmnt}/fstab*" ${rootmnt}
 
 		# Make sure we're booting into android's init
 		ln -s ../init ${rootmnt}/sbin/init
 		ln -s ../init ${rootmnt}/sbin/recovery
 		echo "initrd: booting android..." >/dev/kmsg || true
-####### ruan
-		mkdir /root/dev /root/sys /root/proc
     elif [ -e /tmpmnt/system.img -o -n "$syspart" ]; then
 	    # Loop-mounted flipped model
 		# Transition .developer_mode to .writable_image
@@ -365,10 +353,7 @@ mountroot()
 		cd $OLD_CWD
 
 		# Mount all the Android partitions
-		#mount_android_partitions "${rootmnt}/var/lib/lxc/android/rootfs/fstab*" ${rootmnt}/android
-		rm ${rootmnt}/cache -rf
-		mkdir ${rootmnt}/cache
-		mount -t ext4 -o "noatime,nodiratime,nosuid,nodev,noauto_da_alloc,discard" $R_cache_blk ${rootmnt}/cache 
+		mount_android_partitions "${rootmnt}/var/lib/lxc/android/rootfs/fstab*" ${rootmnt}/android
 
 		# system is a special case
 		echo "initrd: mounting ${rootmnt}/var/lib/lxc/android/system.img as ${rootmnt}/android/system" >/dev/kmsg || true

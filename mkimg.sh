@@ -1,5 +1,5 @@
-R_bin=0
-R_root=0
+R_bin=1
+R_root=1
 
 ANDROID_SRC="$(pwd)/.."
 OUT="$ANDROID_SRC/out/target/product/rk3188"
@@ -69,7 +69,7 @@ if [ -n $1 ];then
 		cp -v $IMAGE_PATH/recovery.img $VM_PATH/
 		echo ".... done."
 	elif [ $1 = 'b' ]; then
-		echo -n " create boot img ...."
+		echo -n " create boot img in $UROOT ...."
 		cp $KERNEL_PATH/arch/arm/boot/Image $OUT/kernel
 		[ -e $OUT/rk_ramdisk-boot.img ] && rm $OUT/rk_ramdisk-boot.img
 		[ -d $UROOT ] && \
