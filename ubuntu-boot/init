@@ -123,7 +123,7 @@ done
 for x in $(cat /proc/cmdline); do
 	case $x in
 	init=*)
-		init=${x#init=}
+		#init=${x#init=}
 		;;
 	root=*)
 		ROOT=${x#root=}
@@ -337,20 +337,20 @@ validate_init() {
 	checktarget="${1}"
 
 	# Work around absolute symlinks
-	if [ -d "${rootmnt}" ] && [ -h "${rootmnt}${checktarget}" ]; then
-		case $(readlink "${rootmnt}${checktarget}") in /*)
+	if [ -d "${rootmnt}" ] && [ -h "${rootmnt}/${checktarget}" ]; then
+		case $(readlink "${rootmnt}/${checktarget}") in /*)
 			checktarget="$(chroot ${rootmnt} readlink ${checktarget})"
 			;;
 		esac
 	fi
 
 	# Make sure the specified init can be executed
-	if [ ! -x "${rootmnt}${checktarget}" ]; then
+	if [ ! -x "${rootmnt}/${checktarget}" ]; then
 		return 1
 	fi
 
 	# Upstart uses /etc/init as configuration directory :-/
-	if [ -d "${rootmnt}${checktarget}" ]; then
+	if [ -d "${rootmnt}/${checktarget}" ]; then
 		return 1
 	fi
 }
